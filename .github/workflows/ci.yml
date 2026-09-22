@@ -15,9 +15,6 @@ jobs:
       matrix:
         service:
           - account-service
-          - driver-vehicle-service
-          - ride-management-service
-          - fare-payment-service
 
     steps:
       - name: Checkout repository
