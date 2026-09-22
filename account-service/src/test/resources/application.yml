@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/ridelink_accounts_test
+
+jwt:
+  secret: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
+  expiration: 86400000
