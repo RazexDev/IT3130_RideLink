@@ -1,9 +1,16 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ridelink_rides_test
-  rabbitmq:
-    host: localhost
+      database: ridelink_rides_test
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 6.0.4
 
 jwt:
   secret: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough

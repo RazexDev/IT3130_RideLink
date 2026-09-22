@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.bean.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +33,9 @@ class RideControllerTest {
 
     @MockBean
     private RideService rideService;
+
+    @MockBean
+    private org.springframework.amqp.rabbit.connection.ConnectionFactory connectionFactory;
 
     private String generateToken(String email, String role, String userId) {
         return io.jsonwebtoken.Jwts.builder()
