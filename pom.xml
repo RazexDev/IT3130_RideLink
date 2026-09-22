@@ -20,9 +20,11 @@
 
     <modules>
         <module>account-service</module>
+        <!--
         <module>driver-vehicle-service</module>
         <module>ride-management-service</module>
         <module>fare-payment-service</module>
+        -->
     </modules>
 
     <properties>
