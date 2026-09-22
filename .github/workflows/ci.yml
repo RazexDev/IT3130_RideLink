@@ -15,6 +15,7 @@ jobs:
       matrix:
         service:
           - account-service
+          - ride-management-service
 
     steps:
       - name: Checkout repository
