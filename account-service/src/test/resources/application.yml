@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/ridelink_accounts_test
+      database: ridelink_accounts_test
 
 jwt:
   secret: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
