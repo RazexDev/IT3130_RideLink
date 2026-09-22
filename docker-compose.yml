@@ -1,0 +1,151 @@
+version: '3.9'
+
+services:
+  # ──────────────────── MongoDB Instances (Database-per-Service) ────────────────────
+  mongodb-account:
+    image: mongo:7
+    container_name: ridelink-mongodb-account
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-account-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ridelink_accounts
+    networks:
+      - ridelink-network
+
+  mongodb-driver:
+    image: mongo:7
+    container_name: ridelink-mongodb-driver
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongodb-driver-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ridelink_drivers
+    networks:
+      - ridelink-network
+
+  mongodb-ride:
+    image: mongo:7
+    container_name: ridelink-mongodb-ride
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongodb-ride-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ridelink_rides
+    networks:
+      - ridelink-network
+
+  mongodb-fare:
+    image: mongo:7
+    container_name: ridelink-mongodb-fare
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongodb-fare-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ridelink_fares
+    networks:
+      - ridelink-network
+
+  # ──────────────────── RabbitMQ ────────────────────
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ridelink-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ridelink
+      RABBITMQ_DEFAULT_PASS: ridelink123
+    networks:
+      - ridelink-network
+
+  # ──────────────────── Microservices ────────────────────
+  account-service:
+    build:
+      context: ./account-service
+      dockerfile: Dockerfile
+    container_name: ridelink-account-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb-account:27017/ridelink_accounts
+      JWT_SECRET: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
+    depends_on:
+      - mongodb-account
+    networks:
+      - ridelink-network
+
+  driver-vehicle-service:
+    build:
+      context: ./driver-vehicle-service
+      dockerfile: Dockerfile
+    container_name: ridelink-driver-vehicle-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb-driver:27017/ridelink_drivers
+      JWT_SECRET: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
+      ACCOUNT_SERVICE_URL: http://account-service:8081
+    depends_on:
+      - mongodb-driver
+      - account-service
+    networks:
+      - ridelink-network
+
+  ride-management-service:
+    build:
+      context: ./ride-management-service
+      dockerfile: Dockerfile
+    container_name: ridelink-ride-management-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb-ride:27017/ridelink_rides
+      JWT_SECRET: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
+      DRIVER_SERVICE_URL: http://driver-vehicle-service:8082
+      FARE_SERVICE_URL: http://fare-payment-service:8084
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ridelink
+      SPRING_RABBITMQ_PASSWORD: ridelink123
+    depends_on:
+      - mongodb-ride
+      - rabbitmq
+      - driver-vehicle-service
+      - fare-payment-service
+    networks:
+      - ridelink-network
+
+  fare-payment-service:
+    build:
+      context: ./fare-payment-service
+      dockerfile: Dockerfile
+    container_name: ridelink-fare-payment-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb-fare:27017/ridelink_fares
+      JWT_SECRET: RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ridelink
+      SPRING_RABBITMQ_PASSWORD: ridelink123
+    depends_on:
+      - mongodb-fare
+      - rabbitmq
+    networks:
+      - ridelink-network
+
+volumes:
+  mongodb-account-data:
+  mongodb-driver-data:
+  mongodb-ride-data:
+  mongodb-fare-data:
+
+networks:
+  ridelink-network:
+    driver: bridge
