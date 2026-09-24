@@ -1,0 +1,31 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: fare-payment-service
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27020/ridelink_fares}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+jwt:
+  secret: ${JWT_SECRET:RideLinkSuperSecretKeyForJWTTokenGeneration2024MustBeLongEnough}
+  expiration: 86400000
+
+rabbitmq:
+  exchange: ride.exchange
+  routing-key:
+    completed: ride.completed
+  queue: fare.payment.queue
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
