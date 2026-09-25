@@ -6,8 +6,6 @@ import com.ridelink.account.security.JwtAuthenticationDetails;
 import com.ridelink.account.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +23,6 @@ public class UserController {
 
     @GetMapping("/me")
     @Operation(summary = "Get current user profile")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved profile")
-    @ApiResponse(responseCode = "401", description = "Unauthorized")
     public ResponseEntity<UserProfileResponse> getCurrentUser(Authentication authentication) {
         JwtAuthenticationDetails details =
                 (JwtAuthenticationDetails) authentication.getDetails();
@@ -36,12 +32,9 @@ public class UserController {
 
     @PutMapping("/me")
     @Operation(summary = "Update current user profile")
-    @ApiResponse(responseCode = "200", description = "Successfully updated profile")
-    @ApiResponse(responseCode = "400", description = "Invalid input")
-    @ApiResponse(responseCode = "401", description = "Unauthorized")
     public ResponseEntity<UserProfileResponse> updateProfile(
             Authentication authentication,
-            @Valid @RequestBody ProfileUpdateRequest request) {
+            @RequestBody ProfileUpdateRequest request) {
         JwtAuthenticationDetails details =
                 (JwtAuthenticationDetails) authentication.getDetails();
         UserProfileResponse profile = userService.updateProfile(details.getUserId(), request);
@@ -50,8 +43,6 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID (service-to-service)")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved profile")
-    @ApiResponse(responseCode = "404", description = "User not found")
     public ResponseEntity<UserProfileResponse> getUserById(@PathVariable String id) {
         UserProfileResponse profile = userService.getUserById(id);
         return ResponseEntity.ok(profile);

@@ -1,16 +1,9 @@
 package com.ridelink.account.dto;
 
-import jakarta.validation.constraints.NotBlank;
-
 public class ProfileUpdateRequest {
 
-    @NotBlank(message = "First name is required")
     private String firstName;
-    
-    @NotBlank(message = "Last name is required")
     private String lastName;
-    
-    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
 
     public ProfileUpdateRequest() {
