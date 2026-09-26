@@ -14,6 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         service:
+          - account-service
           - ride-management-service
 
     steps:
